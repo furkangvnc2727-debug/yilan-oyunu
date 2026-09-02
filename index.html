@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yilan Oyunu - Ucretsiz Online Oyun</title>
+  <meta name="description" content="Yilan oyununu ucretsiz oyna! Yon tuslariyla yonet, elmalari ye, buyu, skor yap! 4 farkli tema, guclendirmeler, boss savaslari.">
+  <meta name="keywords" content="yilan oyunu, snake game, ucretsiz oyun, online oyun, klasik yilan">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0f1a;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    .site-header {
+      background: #111827;
+      border-bottom: 1px solid #1e293b;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .site-header h1 {
+      font-size: 22px;
+      font-weight: 900;
+      color: #4ade80;
+      letter-spacing: 2px;
+    }
+
+    .site-header nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .site-header nav a:hover { color: #4ade80; }
+
+    .main-layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .game-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ad-box {
+      background: #1e293b;
+      border: 1px dashed #334155;
+      border-radius: 8px;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      font-size: 13px;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .ad-horizontal {
+      background: #1e293b;
+      border: 1px dashed #334155;
+      border-radius: 8px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #475569;
+      font-size: 13px;
+      max-width: 728px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .content-area {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .content-area h2 {
+      color: #4ade80;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .content-area p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 10px;
+    }
+
+    .content-area ul {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 2;
+      padding-left: 20px;
+    }
+
+    .content-area li { margin-bottom: 4px; }
+    .content-area li strong { color: #fbbf24; }
+
+    .site-footer {
+      background: #111827;
+      border-top: 1px solid #1e293b;
+      padding: 20px;
+      text-align: center;
+      color: #475569;
+      font-size: 12px;
+      margin-top: 30px;
+    }
+
+    .site-footer a { color: #64748b; text-decoration: none; }
+    .site-footer a:hover { color: #4ade80; }
+
+    .game-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 400px;
+      color: #e2e8f0;
+      padding: 0 4px;
+    }
+
+    .score-box { display: flex; align-items: center; gap: 8px; }
+    .score-label { font-size: 16px; font-weight: 700; color: #94a3b8; }
+    .score-value { color: #4ade80; font-size: 24px; font-weight: 800; }
+    .best-label { font-size: 12px; color: #64748b; }
+
+    .info-bar { display: flex; gap: 8px; align-items: center; }
+
+    .badge {
+      background: #1e293b; border: 1px solid #334155;
+      padding: 2px 8px; border-radius: 12px;
+      font-size: 11px; font-weight: 700;
+    }
+    .lvl-badge { color: #fbbf24; }
+    .mode-badge { color: #a78bfa; }
+    .coin-badge { color: #f59e0b; }
+
+    canvas {
+      border: 2px solid #1e293b; border-radius: 6px; display: block;
+    }
+
+    .overlay {
+      position: absolute; top: 36px; left: 0;
+      width: 404px; height: 404px; border-radius: 6px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      gap: 10px; z-index: 10; text-align: center;
+      background: rgba(10, 15, 26, 0.96);
+      backdrop-filter: blur(8px);
+    }
+    .overlay.hidden { display: none; }
+
+    .title { font-size: 46px; font-weight: 900; color: #f1f5f9; letter-spacing: 3px; text-shadow: 0 0 20px rgba(74,222,128,0.5); }
+    .title.dead { color: #f87171; text-shadow: 0 0 20px rgba(248,113,113,0.5); font-size: 36px; }
+    .sub { color: #94a3b8; font-size: 13px; line-height: 1.6; max-width: 300px; }
+    .final-score { font-size: 18px; color: #cbd5e1; font-weight: 600; }
+    .final-score span { color: #4ade80; font-size: 28px; font-weight: 800; }
+
+    .play-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff; border: none; padding: 10px 36px;
+      font-size: 16px; font-weight: 800; border-radius: 8px;
+      cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(34,197,94,0.35);
+    }
+    .play-btn:hover { transform: translateY(-2px); }
+    .play-btn:active { transform: translateY(0); }
+
+    .shop-btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff; border: none; padding: 10px 30px;
+      font-size: 14px; font-weight: 800; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+    }
+
+    .mode-selector { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .mode-btn {
+      padding: 8px 14px; border: 2px solid #334155; border-radius: 8px;
+      background: #1e293b; color: #94a3b8; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .mode-btn:hover, .mode-btn.active { border-color: #a78bfa; color: #a78bfa; background: #1a1530; }
+
+    .theme-selector { display: flex; gap: 6px; }
+    .theme-btn {
+      padding: 6px 12px; border: 2px solid #334155; border-radius: 6px;
+      background: #1e293b; color: #94a3b8; font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .theme-btn:hover, .theme-btn.active { border-color: #4ade80; color: #4ade80; }
+
+    .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 300px; max-height: 200px; overflow-y: auto; }
+    .skin-card {
+      border: 2px solid #334155; border-radius: 8px; padding: 6px;
+      background: #1e293b; cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .skin-card:hover { border-color: #4ade80; }
+    .skin-card.owned { border-color: #22c55e; }
+    .skin-card.active { border-color: #fbbf24; background: #1a2010; }
+    .skin-preview { width: 40px; height: 40px; border-radius: 50%; }
+    .skin-name { font-size: 10px; color: #94a3b8; font-weight: 700; }
+    .skin-price { font-size: 10px; color: #fbbf24; }
+
+    .achievement-list { width: 300px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+    .achievement {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #1e293b; border: 1px solid #334155; border-radius: 6px;
+      padding: 6px 10px; font-size: 11px;
+    }
+    .achievement.done { border-color: #22c55e; }
+    .achievement .name { color: #94a3b8; }
+    .achievement.done .name { color: #4ade80; }
+    .achievement .reward { color: #fbbf24; }
+
+    .task-list { width: 300px; display: flex; flex-direction: column; gap: 4px; }
+    .task {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #1e293b; border: 1px solid #334155; border-radius: 6px;
+      padding: 6px 10px; font-size: 11px;
+    }
+    .task.done { border-color: #22c55e; }
+    .task .name { color: #94a3b8; }
+    .task .progress { color: #fbbf24; }
+
+    .power-bar { display: flex; gap: 4px; position: absolute; top: 44px; left: 4px; z-index: 5; }
+    .power-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: #1e293b; border: 1px solid #334155;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; position: relative;
+    }
+    .power-icon.active { border-color: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.4); }
+    .power-icon .timer {
+      position: absolute; bottom: -2px; right: -2px;
+      background: #000; color: #4ade80; font-size: 8px;
+      padding: 1px 3px; border-radius: 4px; font-weight: 700;
+    }
+
+    .pause-text {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: #fbbf24; font-size: 32px; font-weight: 900;
+      letter-spacing: 5px; z-index: 20;
+      text-shadow: 0 0 15px rgba(251,191,36,0.5); display: none;
+    }
+    .pause-text.show { display: block; }
+
+    .boss-hp {
+      position: absolute; top: 40px; left: 50%;
+      transform: translateX(-50%); width: 300px;
+      display: none; z-index: 5;
+    }
+    .boss-hp.show { display: block; }
+    .boss-hp-bar { width: 100%; height: 12px; background: #1e293b; border-radius: 6px; overflow: hidden; border: 1px solid #ef4444; }
+    .boss-hp-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #f87171); transition: width 0.3s; }
+    .boss-hp-label { color: #f87171; font-size: 10px; font-weight: 700; text-align: center; margin-top: 2px; }
+
+    .leaderboard { width: 220px; }
+    .leaderboard h3 { color: #fbbf24; font-size: 12px; margin-bottom: 4px; letter-spacing: 1px; }
+    .lb-row { display: flex; justify-content: space-between; color: #94a3b8; font-size: 12px; padding: 2px 0; border-bottom: 1px solid #1e293b; }
+    .lb-row span:last-child { color: #4ade80; font-weight: 700; }
+
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 4px; }
+    .tab-btn {
+      padding: 6px 14px; border: 1px solid #334155; border-radius: 6px;
+      background: #1e293b; color: #64748b; font-size: 11px;
+      font-weight: 700; cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn.active { border-color: #4ade80; color: #4ade80; background: #0f2818; }
+
+    .ad-btn {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff; border: none; padding: 8px 20px;
+      font-size: 13px; font-weight: 700; border-radius: 6px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .ad-btn:hover { transform: translateY(-1px); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+    }
+    .shake { animation: shake 0.3s ease; }
+
+    @media (max-width: 800px) {
+      .main-layout { flex-direction: column; }
+      .sidebar { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>YILAN</h1>
+  <nav>
+    <a href="#oyun">Oyun</a>
+    <a href="#nasil-oynanir">Nasil Oynanir</a>
+    <a href="#ozellikler">Ozellikler</a>
+  </nav>
+</header>
+
+<div class="ad-horizontal">
+  Reklam Alani (728x90) - Google AdSense
+</div>
+
+<div class="main-layout">
+  <div class="game-section" id="oyun">
+    <div class="game-wrapper">
+      <div class="header">
+        <div class="score-box">
+          <span class="score-label">SKOR</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+        <div class="info-bar">
+          <span class="badge lvl-badge" id="level">LVL 1</span>
+          <span class="badge mode-badge" id="modeBadge">SERBEST</span>
+          <span class="badge coin-badge" id="coins">0</span>
+        </div>
+      </div>
+
+      <div class="power-bar" id="powerBar"></div>
+      <canvas id="game" width="400" height="400"></canvas>
+
+      <div class="boss-hp" id="bossHp">
+        <div class="boss-hp-bar"><div class="boss-hp-fill" id="bossHpFill"></div></div>
+        <div class="boss-hp-label">BOSS</div>
+      </div>
+
+      <div class="pause-text" id="pauseText">DURAKLATILDI</div>
+
+      <div class="overlay start" id="menuScreen">
+        <div class="title">YILAN</div>
+        <div class="sub">Yon tuslari veya WASD ile yonet</div>
+        <div class="mode-selector">
+          <div class="mode-btn active" data-mode="free">Serbest</div>
+          <div class="mode-btn" data-mode="time">Zamana Karsi</div>
+          <div class="mode-btn" data-mode="survival">Hayatta Kalma</div>
+        </div>
+        <div class="theme-selector">
+          <div class="theme-btn active" data-theme="desert">Col</div>
+          <div class="theme-btn" data-theme="grass">Yesil</div>
+          <div class="theme-btn" data-theme="plain">Duz</div>
+          <div class="theme-btn" data-theme="ice">Buz</div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-btn active" data-tab="main">Oyun</div>
+          <div class="tab-btn" data-tab="shop">Magaza</div>
+          <div class="tab-btn" data-tab="achieve">Basarilar</div>
+        </div>
+        <div id="tabMain"><button class="play-btn" id="startBtn">BASLAT</button></div>
+        <div id="tabShop" style="display:none">
+          <div class="shop-grid" id="shopGrid"></div>
+          <button class="shop-btn" id="buyBtn">Satin Al</button>
+        </div>
+        <div id="tabAchieve" style="display:none">
+          <div class="achievement-list" id="achieveList"></div>
+        </div>
+      </div>
+
+      <div class="overlay over hidden" id="overScreen">
+        <div class="title dead">GAME OVER</div>
+        <div class="final-score">Skorun: <span id="finalScore">0</span></div>
+        <div class="sub" id="earnedCoins" style="color:#fbbf24"></div>
+        <div id="dailyTasksSection">
+          <div class="sub" style="color:#a78bfa; font-weight:700;">GUNLUK GOREVLER</div>
+          <div class="task-list" id="taskList"></div>
+        </div>
+        <div class="leaderboard" id="leaderboard"></div>
+        <button class="ad-btn" id="adBtn">Reklam Izle +1 Can</button>
+        <button class="play-btn" id="restartBtn">TEKRAR OYNA</button>
+      </div>
+    </div>
+
+    <div class="ad-horizontal" style="margin-top: 10px;">
+      Reklam Alani (728x90) - Google AdSense
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="ad-box">
+      Reklam Alani (300x250)<br>Google AdSense
+    </div>
+
+    <div class="content-area" id="nasil-oynanir">
+      <h2>Nasil Oynanir?</h2>
+      <ul>
+        <li><strong>W/A/S/D</strong> veya <strong>Yon Tuslari</strong> ile yon degistir</li>
+        <li><strong>Space</strong> ile oyunu duraklat</li>
+        <li>Elmalari yiyerek buyu ve <strong>skor</strong> yap</li>
+        <li><strong>Bonus yemler</strong> +3 skor verir</li>
+        <li><strong>25 skorda boss</strong> gelir, yen +10 skor</li>
+        <li><strong>Guc sendikalari</strong> topla: Kalkan, Hiz, Magnet, x2</li>
+        <li>Oyun bittikce <strong>madeni para</strong> kazan</li>
+        <li>Paralari <strong>magazada</strong> yilan derisi al</li>
+      </ul>
+    </div>
+
+    <div class="ad-box">
+      Reklam Alani (300x250)<br>Google AdSense
+    </div>
+
+    <div class="content-area" id="ozellikler">
+      <h2>Ozellikler</h2>
+      <ul>
+        <li><strong>3 Oyun Modu:</strong> Serbest, Zamana Karsi, Hayatta Kalma</li>
+        <li><strong>4 Tema:</strong> Col, Yesillik, Duz, Buzul</li>
+        <li><strong>9 Yilan Derisi:</strong> Altin, Atez, Buz, Mor, Gokkusagi...</li>
+        <li><strong>4 Guclendirme:</strong> Kalkan, Hiz, Magnet, Cift Skor</li>
+        <li><strong>Boss Savaslari:</strong> Her 25 skorda boss gelir</li>
+        <li><strong>Gunluk Gorevler:</strong> Gorev tamamla, odul kazan</li>
+        <li><strong>Basarilar:</strong> Rozet topla, madeni para kazan</li>
+        <li><strong>Ses Efektleri:</strong> Yeme, olum, guclendirme</li>
+      </ul>
+    </div>
+
+    <div class="ad-box">
+      Reklam Alani (300x600)<br>Google AdSense
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Yilan Oyunu - Ucretsiz Online Oyun</p>
+  <p style="margin-top: 6px;">
+    <a href="#">Gizlilik Politikasi</a> |
+    <a href="#">Kullanim Sartlari</a> |
+    <a href="#">Iletisim</a>
+  </p>
+</footer>
+
+<!-- Google AdSense -->
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+
+<script>
+(function () {
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var scoreEl = document.getElementById('score');
+  var levelEl = document.getElementById('level');
+  var modeBadge = document.getElementById('modeBadge');
+  var coinsEl = document.getElementById('coins');
+  var menuScreen = document.getElementById('menuScreen');
+  var overScreen = document.getElementById('overScreen');
+  var finalScoreEl = document.getElementById('finalScore');
+  var pauseText = document.getElementById('pauseText');
+  var lbEl = document.getElementById('leaderboard');
+  var powerBar = document.getElementById('powerBar');
+  var bossHpDiv = document.getElementById('bossHp');
+  var bossHpFill = document.getElementById('bossHpFill');
+  var earnedCoinsEl = document.getElementById('earnedCoins');
+  var taskListEl = document.getElementById('taskList');
+
+  var GRID = 20, CELL = canvas.width / GRID, BASE_SPEED = 130;
+  var snake, dir, nextDir, food, bonusFood, score, growing, alive, loop, paused;
+  var particles = [], frameCount = 0, leaderboard = [];
+  var currentTheme = 'desert', gameMode = 'free', selectedSkin = 'classic';
+  var coins = 0, extraLife = 0, timeLeft = 60;
+  var survivalWalls = [], boss = null, powerItem = null;
+  var powers = { shield: 0, speed: 0, magnet: 0, doubleScore: 0 };
+  var dailyTasks = [], achievements = [];
+
+  var skins = [
+    { id: 'classic', name: 'Klasik', color: '#22c55e', price: 0, owned: true },
+    { id: 'gold', name: 'Altin', color: '#fbbf24', price: 50, owned: false },
+    { id: 'fire', name: 'Ates', color: '#ef4444', price: 50, owned: false },
+    { id: 'ice', name: 'Buz', color: '#38bdf8', price: 50, owned: false },
+    { id: 'purple', name: 'Mor', color: '#a855f7', price: 50, owned: false },
+    { id: 'rainbow', name: 'Gokkusagi', color: 'rainbow', price: 100, owned: false },
+    { id: 'dark', name: 'Karanlik', color: '#475569', price: 75, owned: false },
+    { id: 'neon', name: 'Neon', color: '#4ade80', price: 75, owned: false },
+    { id: 'pink', name: 'Pembe', color: '#f472b6', price: 60, owned: false }
+  ];
+
+  var achievementsDef = [
+    { id: 'score10', name: '10 Skor Yap', check: function(s) { return s >= 10; }, reward: 20 },
+    { id: 'score50', name: '50 Skor Yap', check: function(s) { return s >= 50; }, reward: 50 },
+    { id: 'score100', name: '100 Skor Yap', check: function(s) { return s >= 100; }, reward: 100 },
+    { id: 'eat50', name: '50 Elma Ye', check: function(s) { return s >= 50; }, reward: 30 },
+    { id: 'boss1', name: '1 Boss Yen', check: function(s) { return s >= 25; }, reward: 50 },
+    { id: 'speed5', name: 'Hizli Yilan', check: function(s) { return s >= 15; }, reward: 25 }
+  ];
+
+  var themes = {
+    desert: { bg1: '#d4a843', bg2: '#c49a38' },
+    grass: { bg1: '#2d5a1e', bg2: '#2a5219' },
+    plain: { bg1: '#3b3f45', bg2: '#343840' },
+    ice: { bg1: '#a8d8ea', bg2: '#96cce0' }
+  };
+
+  var decor = [];
+
+  try {
+    var saved = parseInt(localStorage.getItem('snakeBest') || '0', 10);
+    document.getElementById('best') && (document.getElementById('best').textContent = saved || 0);
+    var lbData = localStorage.getItem('snakeLB');
+    if (lbData) leaderboard = JSON.parse(lbData);
+    var savedTheme = localStorage.getItem('snakeTheme');
+    if (savedTheme && themes[savedTheme]) currentTheme = savedTheme;
+    coins = parseInt(localStorage.getItem('snakeCoins') || '0', 10);
+    coinsEl.textContent = coins;
+    var ownedSkins = JSON.parse(localStorage.getItem('snakeSkins') || '["classic"]');
+    skins.forEach(function(s) { s.owned = ownedSkins.indexOf(s.id) !== -1; });
+    selectedSkin = localStorage.getItem('snakeSkin') || 'classic';
+    achievements = JSON.parse(localStorage.getItem('snakeAchieve') || '[]');
+    dailyTasks = JSON.parse(localStorage.getItem('snakeTasks') || '[]');
+  } catch (e) {}
+
+  function saveData() {
+    try {
+      localStorage.setItem('snakeCoins', String(coins));
+      localStorage.setItem('snakeSkin', selectedSkin);
+      var owned = skins.filter(function(s) { return s.owned; }).map(function(s) { return s.id; });
+      localStorage.setItem('snakeSkins', JSON.stringify(owned));
+      localStorage.setItem('snakeAchieve', JSON.stringify(achievements));
+      localStorage.setItem('snakeTasks', JSON.stringify(dailyTasks));
+    } catch (e) {}
+  }
+
+  function genDecor() {
+    decor = [];
+    for (var i = 0; i < 15; i++) {
+      decor.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: 2 + Math.random() * 4, alpha: 0.15 + Math.random() * 0.2 });
+    }
+  }
+
+  function genTasks() {
+    dailyTasks = [
+      { id: 't1', name: '10 Elma Ye', target: 10, progress: 0, done: false, reward: 15 },
+      { id: 't2', name: '20 Skor Yap', target: 20, progress: 0, done: false, reward: 20 },
+      { id: 't3', name: '3 Oyun Oyna', target: 3, progress: 0, done: false, reward: 10 }
+    ];
+    saveData();
+  }
+
+  function renderTasks() {
+    var html = '';
+    dailyTasks.forEach(function(t) {
+      html += '<div class="task ' + (t.done ? 'done' : '') + '">' +
+        '<span class="name">' + t.name + '</span>' +
+        '<span class="progress">' + t.progress + '/' + t.target + ' (+' + t.reward + ')</span></div>';
+    });
+    taskListEl.innerHTML = html;
+  }
+
+  function updateTasks(s) {
+    dailyTasks.forEach(function(t) {
+      if (t.done) return;
+      if (t.id === 't1') t.progress = s;
+      if (t.id === 't2') t.progress = s;
+      if (t.id === 't3') t.progress++;
+      if (t.progress >= t.target && !t.done) { t.done = true; coins += t.reward; coinsEl.textContent = coins; }
+    });
+    saveData();
+  }
+
+  function renderAchievements() {
+    var html = '';
+    achievementsDef.forEach(function(a) {
+      var done = achievements.indexOf(a.id) !== -1;
+      html += '<div class="achievement ' + (done ? 'done' : '') + '">' +
+        '<span class="name">' + (done ? '✓ ' : '') + a.name + '</span>' +
+        '<span class="reward">+' + a.reward + '</span></div>';
+    });
+    document.getElementById('achieveList').innerHTML = html;
+  }
+
+  function checkAchievements(s) {
+    achievementsDef.forEach(function(a) {
+      if (achievements.indexOf(a.id) === -1 && a.check(s)) {
+        achievements.push(a.id); coins += a.reward; coinsEl.textContent = coins;
+      }
+    });
+    saveData();
+  }
+
+  function renderShop() {
+    var html = '';
+    skins.forEach(function(s) {
+      var cls = 'skin-card';
+      if (s.owned) cls += ' owned';
+      if (selectedSkin === s.id) cls += ' active';
+      var preview = s.color === 'rainbow' ? 'linear-gradient(135deg, red, orange, yellow, green, blue, purple)' : s.color;
+      html += '<div class="skin-card ' + cls + '" data-skin="' + s.id + '">' +
+        '<div class="skin-preview" style="background:' + preview + '"></div>' +
+        '<div class="skin-name">' + s.name + '</div>' +
+        '<div class="skin-price">' + (s.owned ? (selectedSkin === s.id ? 'Aktif' : 'Sahip') : s.price) + '</div></div>';
+    });
+    document.getElementById('shopGrid').innerHTML = html;
+    document.querySelectorAll('.skin-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        var sid = card.dataset.skin;
+        var skin = skins.find(function(s) { return s.id === sid; });
+        if (skin && skin.owned) { selectedSkin = sid; saveData(); renderShop(); }
+      });
+    });
+  }
+
+  document.getElementById('buyBtn').addEventListener('click', function() {
+    var active = document.querySelector('.skin-card:hover');
+    if (!active) return;
+    var sid = active.dataset.skin;
+    var skin = skins.find(function(s) { return s.id === sid; });
+    if (!skin || skin.owned) return;
+    if (coins >= skin.price) {
+      coins -= skin.price; skin.owned = true; selectedSkin = sid;
+      coinsEl.textContent = coins; saveData(); renderShop(); playSound('bonus');
+    }
+  });
+
+  function newFood() {
+    var pos;
+    do { pos = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) }; }
+    while (snake.some(function(s) { return s.x === pos.x && s.y === pos.y; }));
+    return pos;
+  }
+
+  function newBonusFood() {
+    var pos;
+    do { pos = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID), ttl: 80 }; }
+    while (snake.some(function(s) { return s.x === pos.x && s.y === pos.y; }) || (pos.x === food.x && pos.y === food.y));
+    return pos;
+  }
+
+  function spawnPower() {
+    var types = ['shield', 'speed', 'magnet', 'doubleScore'];
+    var type = types[Math.floor(Math.random() * types.length)];
+    var pos;
+    do { pos = { x: Math.floor(Math.random() * GRID), y: Math.floor(Math.random() * GRID) }; }
+    while (snake.some(function(s) { return s.x === pos.x && s.y === pos.y; }));
+    return { x: pos.x, y: pos.y, type: type };
+  }
+
+  function getSpeed() {
+    var lvl = Math.floor(score / 5) + 1;
+    var spd = Math.max(55, BASE_SPEED - (lvl - 1) * 8);
+    if (powers.speed > 0) spd = Math.max(40, spd - 30);
+    return spd;
+  }
+
+  function getLevel() { return Math.floor(score / 5) + 1; }
+
+  function spawnBoss() {
+    boss = { x: Math.floor(Math.random() * (GRID - 4)) + 2, y: 0, hp: 5, maxHp: 5, dir: 1, tick: 0 };
+    bossHpDiv.classList.add('show');
+  }
+
+  function genSurvivalWalls() {
+    survivalWalls = [];
+    for (var i = 0; i < 6; i++) {
+      var wx = Math.floor(Math.random() * (GRID - 4)) + 2;
+      var wy = Math.floor(Math.random() * (GRID - 4)) + 2;
+      var horizontal = Math.random() > 0.5;
+      var len = 3 + Math.floor(Math.random() * 3);
+      for (var j = 0; j < len; j++) {
+        survivalWalls.push({ x: horizontal ? wx + j : wx, y: horizontal ? wy : wy + j });
+      }
+    }
+  }
+
+  function renderPowerBar() {
+    var html = '';
+    if (powers.shield > 0) html += '<div class="power-icon active">S<div class="timer">' + Math.ceil(powers.shield / 10) + '</div></div>';
+    if (powers.speed > 0) html += '<div class="power-icon active">H<div class="timer">' + Math.ceil(powers.speed / 10) + '</div></div>';
+    if (powers.magnet > 0) html += '<div class="power-icon active">M<div class="timer">' + Math.ceil(powers.magnet / 10) + '</div></div>';
+    if (powers.doubleScore > 0) html += '<div class="power-icon active">x2<div class="timer">' + Math.ceil(powers.doubleScore / 10) + '</div></div>';
+    powerBar.innerHTML = html;
+  }
+
+  function reset() {
+    snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+    dir = { x: 1, y: 0 }; nextDir = { x: 1, y: 0 };
+    score = 0; growing = 0; alive = true; paused = false;
+    particles = []; frameCount = 0; bonusFood = null; boss = null; powerItem = null;
+    powers = { shield: 0, speed: 0, magnet: 0, doubleScore: 0 };
+    timeLeft = 60; survivalWalls = [];
+    scoreEl.textContent = '0'; levelEl.textContent = 'LVL 1';
+    pauseText.classList.remove('show'); bossHpDiv.classList.remove('show');
+    food = newFood(); genDecor(); renderPowerBar();
+    if (gameMode === 'time') { timeLeft = 60; modeBadge.textContent = 'ZAMANA KARSI'; }
+    else if (gameMode === 'survival') { modeBadge.textContent = 'HAYATTA KALMA'; genSurvivalWalls(); }
+    else { modeBadge.textContent = 'SERBEST'; }
+    if (dailyTasks.length === 0 || dailyTasks[0].progress >= dailyTasks[0].target) genTasks();
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (var i = 0; i < count; i++) {
+      particles.push({ x: x * CELL + CELL / 2, y: y * CELL + CELL / 2, vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8, life: 25 + Math.random() * 15, color: color, size: 2 + Math.random() * 3 });
+    }
+  }
+
+  function updateParticles() {
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i]; p.x += p.vx; p.y += p.vy; p.vx *= 0.95; p.vy *= 0.95;
+      p.life--; p.size *= 0.97; if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function drawParticles() {
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i]; ctx.globalAlpha = Math.min(1, p.life / 40);
+      ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawBg() {
+    var t = themes[currentTheme];
+    for (var i = 0; i < GRID; i++) {
+      for (var j = 0; j < GRID; j++) {
+        ctx.fillStyle = (i + j) % 2 === 0 ? t.bg1 : t.bg2;
+        ctx.fillRect(i * CELL, j * CELL, CELL, CELL);
+      }
+    }
+    if (currentTheme === 'desert') {
+      ctx.globalAlpha = 0.12; ctx.fillStyle = '#e8c368';
+      decor.forEach(function(d) { ctx.beginPath(); ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2); ctx.fill(); });
+      ctx.globalAlpha = 1;
+    } else if (currentTheme === 'grass') {
+      ctx.globalAlpha = 0.3; ctx.strokeStyle = '#4a8a2a'; ctx.lineWidth = 1.5;
+      decor.forEach(function(d) { ctx.beginPath(); ctx.moveTo(d.x, d.y + d.size); ctx.lineTo(d.x + Math.sin(frameCount * 0.02) * 3, d.y - d.size * 2); ctx.stroke(); });
+      ctx.globalAlpha = 1;
+    } else if (currentTheme === 'ice') {
+      ctx.globalAlpha = 0.15; ctx.fillStyle = '#d0eef8';
+      decor.forEach(function(d) {
+        ctx.beginPath(); ctx.moveTo(d.x, d.y - d.size); ctx.lineTo(d.x + d.size * 0.7, d.y);
+        ctx.lineTo(d.x, d.y + d.size); ctx.lineTo(d.x - d.size * 0.7, d.y); ctx.closePath(); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function draw() {
+    drawBg();
+    survivalWalls.forEach(function(w) { ctx.fillStyle = '#64748b'; ctx.fillRect(w.x * CELL + 1, w.y * CELL + 1, CELL - 2, CELL - 2); });
+
+    if (boss) {
+      ctx.fillStyle = '#dc2626'; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(boss.x * CELL + CELL / 2, boss.y * CELL + CELL / 2, CELL * 0.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(boss.x * CELL + CELL / 2 - 4, boss.y * CELL + CELL / 2 - 4, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(boss.x * CELL + CELL / 2 + 4, boss.y * CELL + CELL / 2 - 4, 4, 0, Math.PI * 2); ctx.fill();
+      bossHpFill.style.width = (boss.hp / boss.maxHp * 100) + '%';
+    }
+
+    if (powerItem) {
+      var pc = { shield: '#38bdf8', speed: '#fbbf24', magnet: '#a855f7', doubleScore: '#22c55e' };
+      var pi = { shield: 'S', speed: 'H', magnet: 'M', doubleScore: 'x2' };
+      var pulse = 1 + Math.sin(frameCount * 0.15) * 0.15;
+      ctx.fillStyle = pc[powerItem.type]; ctx.shadowColor = pc[powerItem.type]; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(powerItem.x * CELL + CELL / 2, powerItem.y * CELL + CELL / 2, (CELL / 2 - 2) * pulse, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#fff'; ctx.font = 'bold ' + (CELL * 0.45) + 'px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(pi[powerItem.type], powerItem.x * CELL + CELL / 2, powerItem.y * CELL + CELL / 2 + 1);
+    }
+
+    if (bonusFood && bonusFood.ttl > 0) {
+      var bfP = 1 + Math.sin(frameCount * 0.15) * 0.2;
+      ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 12; ctx.fillStyle = '#fbbf24';
+      ctx.beginPath(); ctx.arc(bonusFood.x * CELL + CELL / 2, bonusFood.y * CELL + CELL / 2, (CELL / 2 - 2) * bfP, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    var fPulse = 1 + Math.sin(frameCount * 0.08) * 0.1;
+    ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8; ctx.fillStyle = '#dc2626';
+    ctx.beginPath(); ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, (CELL / 2 - 2) * fPulse, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    var R = CELL / 2;
+    var skinData = skins.find(function(s) { return s.id === selectedSkin; }) || skins[0];
+
+    for (var i = snake.length - 1; i >= 0; i--) {
+      var s = snake[i]; var cx = s.x * CELL + R; var cy = s.y * CELL + R;
+      if (i === 0) { ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 6; }
+      var ratio = 1 - (i / Math.max(snake.length, 1)) * 0.35;
+      var bodyR = R * 0.92 * ratio;
+      var skinColor = skinData.color;
+      if (skinColor === 'rainbow') { skinColor = 'hsl(' + ((frameCount * 3 + i * 20) % 360) + ', 80%, 55%)'; }
+      if (i < snake.length - 1) {
+        var nxt = snake[i + 1]; var dx = s.x - nxt.x; var dy = s.y - nxt.y;
+        ctx.fillStyle = skinColor; ctx.globalAlpha = 0.8;
+        ctx.beginPath(); ctx.arc(cx - dx * R * 0.5, cy - dy * R * 0.5, bodyR + 2, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      ctx.fillStyle = skinColor; ctx.beginPath(); ctx.arc(cx, cy, bodyR, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+
+      if (i === 0) {
+        var eyeOff = CELL * 0.22, eyeR = CELL * 0.11;
+        var lx, ly, rx, ry;
+        if (dir.x === 1) { lx = cx + eyeOff * 0.5; ly = cy - eyeOff; rx = cx + eyeOff * 0.5; ry = cy + eyeOff; }
+        else if (dir.x === -1) { lx = cx - eyeOff * 0.5; ly = cy - eyeOff; rx = cx - eyeOff * 0.5; ry = cy + eyeOff; }
+        else if (dir.y === -1) { lx = cx - eyeOff; ly = cy - eyeOff * 0.5; rx = cx + eyeOff; ry = cy - eyeOff * 0.5; }
+        else { lx = cx - eyeOff; ly = cy + eyeOff * 0.5; rx = cx + eyeOff; ry = cy + eyeOff * 0.5; }
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(lx, ly, eyeR + 1, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(rx, ry, eyeR + 1, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.beginPath(); ctx.arc(lx + dir.x * 1.5, ly + dir.y * 1.5, eyeR * 0.65, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(rx + dir.x * 1.5, ry + dir.y * 1.5, eyeR * 0.65, 0, Math.PI * 2); ctx.fill();
+
+        var tongueX = cx + dir.x * R, tongueY = cy + dir.y * R;
+        ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(tongueX, tongueY);
+        ctx.lineTo(tongueX + dir.x * 6 + (dir.y !== 0 ? -3 : 0), tongueY + dir.y * 6 + (dir.x !== 0 ? -3 : 0)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(tongueX, tongueY);
+        ctx.lineTo(tongueX + dir.x * 6 + (dir.y !== 0 ? 3 : 0), tongueY + dir.y * 6 + (dir.x !== 0 ? 3 : 0)); ctx.stroke();
+      }
+    }
+
+    if (powers.shield > 0) {
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.globalAlpha = 0.5 + Math.sin(frameCount * 0.1) * 0.3;
+      ctx.beginPath(); ctx.arc(snake[0].x * CELL + R, snake[0].y * CELL + R, R + 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    drawParticles();
+    if (gameMode === 'time') {
+      ctx.fillStyle = timeLeft <= 10 ? '#ef4444' : '#fbbf24';
+      ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('Sure: ' + timeLeft + 's', canvas.width - 10, 20);
+    }
+  }
+
+  function tick() {
+    if (!alive || paused) return;
+    frameCount++; dir = nextDir;
+    var head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+    if (head.x < 0) head.x = GRID - 1; if (head.x >= GRID) head.x = 0;
+    if (head.y < 0) head.y = GRID - 1; if (head.y >= GRID) head.y = 0;
+
+    for (var i = 0; i < survivalWalls.length; i++) {
+      if (survivalWalls[i].x === head.x && survivalWalls[i].y === head.y) {
+        if (powers.shield > 0) { survivalWalls.splice(i, 1); spawnParticles(head.x, head.y, '#38bdf8', 8); playSound('eat'); }
+        else return die();
+      }
+    }
+
+    for (var j = 0; j < snake.length; j++) {
+      if (snake[j].x === head.x && snake[j].y === head.y) {
+        if (powers.shield > 0) { powers.shield = 0; spawnParticles(head.x, head.y, '#38bdf8', 8); }
+        else return die();
+      }
+    }
+
+    snake.unshift(head);
+
+    if (powers.magnet > 0) {
+      var mdx = head.x - food.x, mdy = head.y - food.y;
+      if (Math.abs(mdx) + Math.abs(mdy) <= 3) { food.x = head.x; food.y = head.y; }
+    }
+
+    if (head.x === food.x && head.y === food.y) {
+      var pts = powers.doubleScore > 0 ? 2 : 1;
+      score += pts; growing += 1;
+      spawnParticles(food.x, food.y, '#ef4444', 10); playSound('eat');
+      food = newFood();
+      if (score % 5 === 0 && !bonusFood) bonusFood = newBonusFood();
+      if (score === 25 && !boss) spawnBoss();
+      levelEl.textContent = 'LVL ' + getLevel(); scoreEl.textContent = score;
+      var best = parseInt(document.getElementById('best') ? document.getElementById('best').textContent : '0', 10) || 0;
+      if (score > best) {
+        if (document.getElementById('best')) document.getElementById('best').textContent = score;
+        try { localStorage.setItem('snakeBest', String(score)); } catch (e) {}
+      }
+      clearInterval(loop); loop = setInterval(tick, getSpeed());
+    }
+
+    if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
+      score += 3; growing += 1;
+      spawnParticles(bonusFood.x, bonusFood.y, '#fbbf24', 15); playSound('bonus');
+      bonusFood = null;
+    }
+
+    if (powerItem && head.x === powerItem.x && head.y === powerItem.y) {
+      powers[powerItem.type] = 100;
+      spawnParticles(powerItem.x, powerItem.y, '#a78bfa', 12); playSound('bonus');
+      powerItem = null; renderPowerBar();
+    }
+
+    if (boss) {
+      boss.tick++;
+      if (boss.tick % 3 === 0) { boss.y += boss.dir; if (boss.y >= GRID - 1 || boss.y <= 0) boss.dir *= -1; }
+      if (Math.abs(head.x - boss.x) <= 1 && Math.abs(head.y - boss.y) <= 1) {
+        if (powers.shield > 0) {
+          boss.hp--; spawnParticles(boss.x, boss.y, '#fbbf24', 8); playSound('eat');
+          if (boss.hp <= 0) {
+            score += 10; scoreEl.textContent = score;
+            spawnParticles(boss.x, boss.y, '#ef4444', 25); playSound('bonus');
+            boss = null; bossHpDiv.classList.remove('show');
+          }
+        } else return die();
+      }
+    }
+
+    if (bonusFood) { bonusFood.ttl--; if (bonusFood.ttl <= 0) bonusFood = null; }
+    Object.keys(powers).forEach(function(k) { if (powers[k] > 0) { powers[k]--; if (powers[k] <= 0) powers[k] = 0; } });
+    if (frameCount % 200 === 0 && !powerItem) powerItem = spawnPower();
+    if (gameMode === 'time') { timeLeft--; if (timeLeft <= 0) return die(); }
+    if (growing > 0) growing--; else snake.pop();
+    updateParticles(); renderPowerBar(); draw();
+  }
+
+  function die() {
+    alive = false; clearInterval(loop);
+    var earned = Math.floor(score * 0.5); coins += earned; coinsEl.textContent = coins;
+    for (var i = 0; i < snake.length; i++) spawnParticles(snake[i].x, snake[i].y, '#22c55e', 3);
+    playSound('die');
+    wrapper.classList.add('shake'); setTimeout(function() { wrapper.classList.remove('shake'); }, 300);
+    checkAchievements(score); updateTasks(score);
+    var remaining = 30;
+    var dieLoop = setInterval(function() {
+      updateParticles(); draw(); remaining--;
+      if (remaining <= 0) {
+        clearInterval(dieLoop); finalScoreEl.textContent = score;
+        earnedCoinsEl.textContent = '+' + earned + ' kazandin!';
+        leaderboard.push(score); leaderboard.sort(function(a, b) { return b - a; });
+        leaderboard = leaderboard.slice(0, 5);
+        try { localStorage.setItem('snakeLB', JSON.stringify(leaderboard)); } catch (e) {}
+        renderLB(); renderTasks(); overScreen.classList.remove('hidden');
+      }
+    }, 30);
+  }
+
+  function renderLB() {
+    var html = '<h3>EN IYI SKORLAR</h3>';
+    if (leaderboard.length === 0) html += '<div class="lb-row"><span>Henuz yok</span><span>-</span></div>';
+    else for (var i = 0; i < leaderboard.length; i++) html += '<div class="lb-row"><span>' + (i + 1) + '.</span><span>' + leaderboard[i] + '</span></div>';
+    lbEl.innerHTML = html;
+  }
+
+  var wrapper = document.querySelector('.game-wrapper');
+
+  function start() {
+    reset(); draw();
+    menuScreen.classList.add('hidden'); overScreen.classList.add('hidden');
+    clearInterval(loop); loop = setInterval(tick, getSpeed());
+  }
+
+  function togglePause() {
+    if (!alive) return; paused = !paused;
+    if (paused) pauseText.classList.add('show'); else pauseText.classList.remove('show');
+  }
+
+  var audioCtx = null;
+  function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+
+  function playSound(type) {
+    try {
+      var ac = getAudio(); var osc = ac.createOscillator(); var gain = ac.createGain();
+      osc.connect(gain); gain.connect(ac.destination);
+      if (type === 'eat') {
+        osc.frequency.setValueAtTime(600, ac.currentTime); osc.frequency.exponentialRampToValueAtTime(900, ac.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, ac.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.08);
+        osc.type = 'sine'; osc.start(); osc.stop(ac.currentTime + 0.08);
+      } else if (type === 'bonus') {
+        osc.frequency.setValueAtTime(800, ac.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, ac.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.15, ac.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.12);
+        osc.type = 'sine'; osc.start(); osc.stop(ac.currentTime + 0.12);
+      } else if (type === 'die') {
+        osc.frequency.setValueAtTime(300, ac.currentTime); osc.frequency.exponentialRampToValueAtTime(80, ac.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, ac.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.3);
+        osc.type = 'sawtooth'; osc.start(); osc.stop(ac.currentTime + 0.3);
+      }
+    } catch (e) {}
+  }
+
+  document.addEventListener('keydown', function(e) {
+    var map = {
+      ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 }, ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 },
+      w: { x: 0, y: -1 }, W: { x: 0, y: -1 }, s: { x: 0, y: 1 }, S: { x: 0, y: 1 },
+      a: { x: -1, y: 0 }, A: { x: -1, y: 0 }, d: { x: 1, y: 0 }, D: { x: 1, y: 0 }
+    };
+    if (e.key === ' ' || e.key === 'Escape') { e.preventDefault(); togglePause(); return; }
+    var nd = map[e.key]; if (!nd) return; e.preventDefault();
+    if (!alive || paused) return; if (nd.x === -dir.x && nd.y === -dir.y) return; nextDir = nd;
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active'); gameMode = btn.dataset.mode;
+    });
+  });
+
+  document.querySelectorAll('.theme-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active'); currentTheme = btn.dataset.theme;
+      try { localStorage.setItem('snakeTheme', currentTheme); } catch (e) {}
+      genDecor();
+    });
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tabMain').style.display = btn.dataset.tab === 'main' ? '' : 'none';
+      document.getElementById('tabShop').style.display = btn.dataset.tab === 'shop' ? '' : 'none';
+      document.getElementById('tabAchieve').style.display = btn.dataset.tab === 'achieve' ? '' : 'none';
+      if (btn.dataset.tab === 'shop') renderShop();
+      if (btn.dataset.tab === 'achieve') renderAchievements();
+    });
+  });
+
+  document.getElementById('startBtn').addEventListener('click', start);
+  document.getElementById('restartBtn').addEventListener('click', start);
+
+  document.getElementById('adBtn').addEventListener('click', function() {
+    extraLife++; coins += 10; coinsEl.textContent = coins; playSound('bonus');
+    overScreen.classList.add('hidden'); alive = true;
+    snake.unshift({ x: snake[0].x, y: snake[0].y });
+    clearInterval(loop); loop = setInterval(tick, getSpeed());
+  });
+
+  genDecor(); renderLB(); renderShop(); renderAchievements(); reset(); draw();
+})();
+</script>
+
+</body>
+</html>

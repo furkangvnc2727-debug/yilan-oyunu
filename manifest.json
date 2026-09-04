@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Yilan Oyunu",
+  "version": "3.0",
+  "description": "Klasik yilan oyununu yeni sekmede oyna! Elmalari ye, buyu, skor yap!",
+  "action": {
+    "default_title": "Yilan Oyunu - Tikla ve Oyna"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c"></canvas>
+<script>
+function makeIcon(size) {
+  var c = document.getElementById('c');
+  c.width = size;
+  c.height = size;
+  var ctx = c.getContext('2d');
+
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#22c55e';
+  var s = size / 8;
+  ctx.beginPath();
+  ctx.arc(size/2 + s*0.5, size/2, s * 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.arc(size/2 + s*2, size/2 - s*0.8, s * 0.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(size/2 + s*1.2, size/2 - s*0.8, s * 0.35, 0, Math.PI * 2);
+  ctx.fill();
+
+  return c.toDataURL('image/png');
+}
+
+[16, 48, 128].forEach(function(size) {
+  var link = document.createElement('a');
+  link.href = makeIcon(size);
+  link.download = 'icon' + size + '.png';
+  link.textContent = 'Icon ' + size + 'x' + size + ' - Indir';
+  link.style.display = 'block';
+  link.style.margin = '10px';
+  link.style.color = 'white';
+  link.style.background = '#333';
+  link.style.padding = '10px';
+  link.style.textDecoration = 'none';
+  link.style.borderRadius = '5px';
+  document.body.appendChild(link);
+});
+</script>
+</body>
+</html>

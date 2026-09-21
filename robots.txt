@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://furkangvnc2727-debug.github.io/yilan-oyunu/sitemap.xml
